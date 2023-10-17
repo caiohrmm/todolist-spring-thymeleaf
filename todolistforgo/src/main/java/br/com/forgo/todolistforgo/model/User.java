@@ -2,6 +2,7 @@ package br.com.forgo.todolistforgo.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,8 +19,8 @@ public class User {
     @Column(length = 50)
     private String username;
 
-    @Column(name = "created_user", nullable = false, length = 40)
-    private Date createdUser;
+    @Column(name = "created_user", columnDefinition = "TIMESTAMP")
+    private LocalDateTime createdUser;
 
     @Column(nullable = false, length = 70)
     private String email;
@@ -47,11 +48,11 @@ public class User {
         this.username = username;
     }
 
-    public Date getCreatedUser() {
+    public LocalDateTime getCreatedUser() {
         return createdUser;
     }
 
-    public void setCreatedUser(Date createdUser) {
+    public void setCreatedUser(LocalDateTime createdUser) {
         this.createdUser = createdUser;
     }
 
