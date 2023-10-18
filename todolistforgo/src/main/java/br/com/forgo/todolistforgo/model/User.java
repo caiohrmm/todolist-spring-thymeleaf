@@ -3,13 +3,11 @@ package br.com.forgo.todolistforgo.model;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints =
+@UniqueConstraint(columnNames = "email"))
 public class User {
 
     @Id
@@ -31,6 +29,37 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName =
+                    "id"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id",
+                    referencedColumnName = "id"
+            )
+    )
+    private Collection<Role> roles;
+
+
+    public User(String username, LocalDateTime createdUser, String email, String phone, List<Task> tasks, Collection<Role> roles) {
+        this.username = username;
+        this.createdUser = createdUser;
+        this.email = email;
+        this.phone = phone;
+        this.tasks = tasks;
+        this.roles = roles;
+    }
+
+    public Collection<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Collection<Role> roles) {
+        this.roles = roles;
+    }
 
     public Long getId() {
         return id;
@@ -89,11 +118,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(tasks, user.tasks);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(tasks, user.tasks) && Objects.equals(roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, createdUser, email, phone, tasks);
+        return Objects.hash(id, username, createdUser, email, phone, tasks, roles);
     }
 }
