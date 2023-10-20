@@ -26,6 +26,9 @@ public class User {
     @Column(nullable = false, length = 20)
     private String phone;
 
+    @Column(nullable = false, length = 100)
+    private String password;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
 
@@ -44,12 +47,12 @@ public class User {
     private Collection<Role> roles;
 
 
-    public User(String username, LocalDateTime createdUser, String email, String phone, List<Task> tasks, Collection<Role> roles) {
+    public User(String username, LocalDateTime createdUser, String email, String phone, String password, Collection<Role> roles) {
         this.username = username;
         this.createdUser = createdUser;
         this.email = email;
         this.phone = phone;
-        this.tasks = tasks;
+        this.password = password;
         this.roles = roles;
     }
 
@@ -110,6 +113,14 @@ public class User {
         this.tasks = tasks;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
     public User() {
     }
 
@@ -118,11 +129,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(tasks, user.tasks) && Objects.equals(roles, user.roles);
+        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(password, user.password) && Objects.equals(tasks, user.tasks) && Objects.equals(roles, user.roles);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, createdUser, email, phone, tasks, roles);
+        return Objects.hash(id, username, createdUser, email, phone, password, tasks, roles);
     }
 }

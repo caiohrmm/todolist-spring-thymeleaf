@@ -1,11 +1,16 @@
 package br.com.forgo.todolistforgo.service.userservice;
 
+import br.com.forgo.todolistforgo.dto.UserRegistrationDto;
 import br.com.forgo.todolistforgo.model.Task;
 import br.com.forgo.todolistforgo.model.User;
 
 import java.util.List;
 
 public interface UserInterfaceService {
+
+    // Método para registrar o usuário
+    User save(UserRegistrationDto userRegistrationDto);
+
 
     // Métodos para o usuário.
     User updateUser(User user);
