@@ -6,13 +6,12 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
-@Table(name = "users", uniqueConstraints =
-@UniqueConstraint(columnNames = "email"))
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     @Column(length = 50)
     private String username;
@@ -26,50 +25,39 @@ public class User {
     @Column(nullable = false, length = 20)
     private String phone;
 
-    @Column(nullable = false, length = 100)
+    @Transient
     private String password;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "users_roles",
-            joinColumns = @JoinColumn(
-                    name = "user_id", referencedColumnName =
-                    "id"
-            ),
-            inverseJoinColumns = @JoinColumn(
-                    name = "role_id",
-                    referencedColumnName = "id"
-            )
+
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
     )
-    private Collection<Role> roles;
+    private UserAccount userAccount;
 
-
-    public User(String username, LocalDateTime createdUser, String email, String phone, String password, Collection<Role> roles) {
+    public User(String username, LocalDateTime createdUser, String email, String phone, String password, List<Task> tasks, UserAccount userAccount) {
         this.username = username;
         this.createdUser = createdUser;
         this.email = email;
         this.phone = phone;
         this.password = password;
-        this.roles = roles;
+        this.tasks = tasks;
+        this.userAccount = userAccount;
     }
 
-    public Collection<Role> getRoles() {
-        return roles;
+    public User() {
     }
 
-    public void setRoles(Collection<Role> roles) {
-        this.roles = roles;
+    public Long getUserId() {
+        return userId;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -104,6 +92,13 @@ public class User {
         this.phone = phone;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public List<Task> getTasks() {
         return tasks;
@@ -113,15 +108,12 @@ public class User {
         this.tasks = tasks;
     }
 
-    public String getPassword() {
-        return password;
+    public UserAccount getUserAccount() {
+        return userAccount;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public User() {
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
     }
 
     @Override
@@ -129,11 +121,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(password, user.password) && Objects.equals(tasks, user.tasks) && Objects.equals(roles, user.roles);
+        return Objects.equals(userId, user.userId) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(password, user.password) && Objects.equals(tasks, user.tasks) && Objects.equals(userAccount, user.userAccount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, createdUser, email, phone, password, tasks, roles);
+        return Objects.hash(userId, username, createdUser, email, phone, password, tasks, userAccount);
     }
 }

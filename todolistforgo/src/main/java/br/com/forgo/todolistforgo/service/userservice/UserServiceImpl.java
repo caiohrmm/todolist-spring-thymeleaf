@@ -1,20 +1,18 @@
 package br.com.forgo.todolistforgo.service.userservice;
 
-import br.com.forgo.todolistforgo.dto.UserRegistrationDto;
 import br.com.forgo.todolistforgo.exceptions.InvalidTaskException;
 import br.com.forgo.todolistforgo.exceptions.TaskNotFoundException;
+import br.com.forgo.todolistforgo.exceptions.UserExistingException;
 import br.com.forgo.todolistforgo.exceptions.UserNotFoundException;
-import br.com.forgo.todolistforgo.model.Role;
 import br.com.forgo.todolistforgo.model.Task;
 import br.com.forgo.todolistforgo.model.User;
 import br.com.forgo.todolistforgo.repository.TaskRepository;
 import br.com.forgo.todolistforgo.repository.UserRepository;
-import jakarta.transaction.Transactional;
+import br.com.forgo.todolistforgo.service.useraccountservice.UserAccountService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -26,20 +24,9 @@ public class UserServiceImpl implements UserInterfaceService {
     @Autowired
     private TaskRepository taskRepository;
 
+    @Autowired
+    private UserAccountService userAccountService;
 
-    @Override
-    public User save(UserRegistrationDto userRegistrationDto) {
-        User user = new User(
-                userRegistrationDto.getUsername(),
-                LocalDateTime.now(),
-                userRegistrationDto.getEmail(),
-                userRegistrationDto.getPhone(),
-                userRegistrationDto.getPassword(),
-                Arrays.asList(new Role(
-                        "ROLE_USER")));
-
-        return repository.save(user);
-    }
 
     @Override
     public User updateUser(User user) {
@@ -54,6 +41,21 @@ public class UserServiceImpl implements UserInterfaceService {
     @Override
     public User getUserById(Long userId) {
         return null;
+    }
+
+    @Override
+    public User createUser(User user) {
+
+        User userExisting = repository.findUserByEmail(user.getEmail());
+
+        if (userExisting != null) {
+            throw new UserExistingException("Usuário já existe !");
+        }
+
+        user.setCreatedUser(LocalDateTime.now());
+        User theUser = repository.save(user);
+        userAccountService.createUserAccount(theUser);
+        return theUser;
     }
 
     @Override
@@ -95,7 +97,7 @@ public class UserServiceImpl implements UserInterfaceService {
         // Verificar se a tarefa existe e pertence ao usuário
         Task existingTask = taskRepository.findById(taskId).orElse(null);
 
-        if (existingTask == null || !existingTask.getUser().getId().equals(userId)) {
+        if (existingTask == null || !existingTask.getUser().getUserId().equals(userId)) {
             throw new TaskNotFoundException("Tarefa não encontrada ou não pertence ao usuário");
         }
 
