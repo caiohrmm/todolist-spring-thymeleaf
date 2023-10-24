@@ -1,6 +1,6 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark p-3 mb-4">
     <div class="container-fluid">
-        <a class="navbar-brand" href="#">Tasklist</a>
+        <a class="navbar-brand" href="/profile" th:href="@{/profile}" >Tasklist</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -8,10 +8,10 @@
         <div class=" collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ms-auto ">
                 <li class="nav-item">
-                    <a class="nav-link mx-2 active" aria-current="page" href="#">Home</a>
+                    <a class="nav-link mx-2 active" aria-current="page" href="/profile" th:href="@{/profile}">Home</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link mx-2" href="/tasks/createtask" th:href="@{/tasks/createtask}">Criar tarefa</a>
+                    <a class="nav-link mx-2" href="/tasks/createtask" th:href="@{/api/v1/tasks/createtask}">Criar tarefa</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link mx-2" href="#">Gerar relatório</a>

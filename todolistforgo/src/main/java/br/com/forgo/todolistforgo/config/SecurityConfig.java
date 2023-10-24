@@ -39,6 +39,9 @@ public class SecurityConfig {
                             .requestMatchers(HttpMethod.POST,
                                     "/api/v1/users/*")
                             .permitAll()
+                            .requestMatchers(HttpMethod.POST,
+                                    "/api/v1/tasks/*")
+                            .permitAll()
                             .anyRequest()
                             .authenticated();
                 }).formLogin((formLogin) -> {

@@ -9,6 +9,7 @@ import br.com.forgo.todolistforgo.model.User;
 import br.com.forgo.todolistforgo.repository.TaskRepository;
 import br.com.forgo.todolistforgo.repository.UserRepository;
 import br.com.forgo.todolistforgo.service.useraccountservice.UserAccountService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -125,5 +126,28 @@ public class UserServiceImpl implements UserInterfaceService {
 
         // Salvar a tarefa no banco de dados
         return taskRepository.save(task);
+    }
+
+    @Override
+    public void completeTask(Long taskId, Long userId) {
+        Task task = taskRepository.findTaskByUserId(userId, taskId);
+
+        if (task == null || !task.getUser().getUserId().equals(userId)) {
+            throw new TaskNotFoundException("Tarefa não encontrada ou não pertence ao usuário");
+        }
+
+        task.setCompletionDate(LocalDateTime.now());
+        task.setDone(true);
+        taskRepository.save(task);
+    }
+
+    @Transactional
+    public void deleteCompletedTasks(Long userId) {
+
+        if (userId == null) throw new UserNotFoundException("Usuário Inválido");
+
+        taskRepository.deleteCompletedTasks(userId);
+
+
     }
 }

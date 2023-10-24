@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 @Entity
@@ -57,8 +58,10 @@ public class Task {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreatedAt(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        String formattedDateTime = localDateTime.format(formatter);
+        this.createdAt = LocalDateTime.parse(formattedDateTime, formatter);
     }
 
     public LocalDateTime getCompletionDate() {
@@ -104,5 +107,10 @@ public class Task {
     @Override
     public int hashCode() {
         return Objects.hash(id, title, description, createdAt, completionDate, done, user);
+    }
+
+    public String getFormatDate(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return localDateTime.format(formatter);
     }
 }

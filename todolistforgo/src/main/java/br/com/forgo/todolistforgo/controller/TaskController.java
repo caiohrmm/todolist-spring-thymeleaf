@@ -3,21 +3,22 @@ package br.com.forgo.todolistforgo.controller;
 import br.com.forgo.todolistforgo.model.Task;
 import br.com.forgo.todolistforgo.model.User;
 import br.com.forgo.todolistforgo.model.UserAccount;
+import br.com.forgo.todolistforgo.repository.TaskRepository;
 import br.com.forgo.todolistforgo.repository.UserAccountRepository;
 import br.com.forgo.todolistforgo.service.userservice.UserServiceImpl;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Controller
-@RequestMapping("/tasks")
+@RequestMapping("api/v1/tasks")
 public class TaskController {
 
     @Autowired
@@ -26,6 +27,10 @@ public class TaskController {
 
     @Autowired
     private UserAccountRepository userAccountRepository;
+
+    @Autowired
+    private TaskRepository repository;
+
 
     @GetMapping("/createtask")
     public String home(Model model){
@@ -54,5 +59,25 @@ public class TaskController {
         } catch (Exception e) {
             return "redirect:/?error";
         }
+    }
+
+    @GetMapping("/completetask/{taskId}/{userId}")
+    public String completeTask(@PathVariable Long taskId, @PathVariable Long userId) {
+
+        service.completeTask(taskId, userId);
+
+        return "redirect:/profile";
+
+
+    }
+
+    @GetMapping("/deletecompletedtasks/{userId}")
+    public String completeTask(@PathVariable Long userId) {
+
+        service.deleteCompletedTasks(userId);
+
+        return "redirect:/profile";
+
+
     }
 }

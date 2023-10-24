@@ -23,4 +23,6 @@ public interface UserInterfaceService {
     void deleteTask(Long taskId, Long userId);
     Task updateTask(Long taskId, Long userId, Task updatedTask);
     Task createTask(Task task);
+
+    void completeTask(Long userId, Long taskId);
 }

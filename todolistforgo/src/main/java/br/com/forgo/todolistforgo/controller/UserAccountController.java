@@ -4,7 +4,6 @@ import br.com.forgo.todolistforgo.model.User;
 import br.com.forgo.todolistforgo.model.UserAccount;
 import br.com.forgo.todolistforgo.repository.TaskRepository;
 import br.com.forgo.todolistforgo.repository.UserAccountRepository;
-import br.com.forgo.todolistforgo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
