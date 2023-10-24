@@ -1,33 +1,58 @@
 package br.com.forgo.todolistforgo.controller;
 
 import br.com.forgo.todolistforgo.model.Task;
-import br.com.forgo.todolistforgo.service.taskservice.TaskServiceImpl;
+import br.com.forgo.todolistforgo.model.User;
+import br.com.forgo.todolistforgo.model.UserAccount;
+import br.com.forgo.todolistforgo.repository.UserAccountRepository;
 import br.com.forgo.todolistforgo.service.userservice.UserServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Controller
 @RequestMapping("/tasks")
 public class TaskController {
 
-    private final TaskServiceImpl service;
+    @Autowired
+    private UserServiceImpl service;
+
 
     @Autowired
-    public TaskController(TaskServiceImpl service) {
-        this.service = service;
+    private UserAccountRepository userAccountRepository;
+
+    @GetMapping("/createtask")
+    public String home(Model model){
+        model.addAttribute("task",
+                new Task());
+        return "createtask";
     }
 
-    @GetMapping(value = "/")
-    public ModelAndView findAllTasks() {
-        ModelAndView modelAndView = new ModelAndView("tasks");
-        List<Task> tasks = service.findAllTasks();
-        modelAndView.addObject("tasks", tasks);
-        return modelAndView;
-    }
+    @PostMapping("/createtask")
+    public String createTask(Task task, Authentication auth, Model model)  {
+        UserAccount userAccount = userAccountRepository
+                .findUserAccountByUsername(auth.getName())
+                .stream()
+                .findFirst()
+                .orElseThrow(() -> new
+                        UsernameNotFoundException("username not found"));
+        User user = userAccount.getUser();
 
+        task.setUser(user);
+        task.setCreatedAt(LocalDateTime.now());
+        task.setDone(false);
+
+        try {
+            service.createTask(task);
+            return "redirect:/profile";
+        } catch (Exception e) {
+            return "redirect:/?error";
+        }
+    }
 }

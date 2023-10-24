@@ -2,24 +2,22 @@ package br.com.forgo.todolistforgo.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long userId;
 
     @Column(length = 50)
     private String username;
 
-    @Column(name = "created_user", nullable = false, length = 40)
-    private Date createdUser;
+    @Column(name = "created_user", columnDefinition = "TIMESTAMP")
+    private LocalDateTime createdUser;
 
     @Column(nullable = false, length = 70)
     private String email;
@@ -27,16 +25,39 @@ public class User {
     @Column(nullable = false, length = 20)
     private String phone;
 
+    @Transient
+    private String password;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Task> tasks = new ArrayList<>();
 
 
-    public Long getId() {
-        return id;
+    @OneToOne(
+            mappedBy = "user",
+            cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY
+    )
+    private UserAccount userAccount;
+
+    public User(String username, LocalDateTime createdUser, String email, String phone, String password, List<Task> tasks, UserAccount userAccount) {
+        this.username = username;
+        this.createdUser = createdUser;
+        this.email = email;
+        this.phone = phone;
+        this.password = password;
+        this.tasks = tasks;
+        this.userAccount = userAccount;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public User() {
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -47,11 +68,11 @@ public class User {
         this.username = username;
     }
 
-    public Date getCreatedUser() {
+    public LocalDateTime getCreatedUser() {
         return createdUser;
     }
 
-    public void setCreatedUser(Date createdUser) {
+    public void setCreatedUser(LocalDateTime createdUser) {
         this.createdUser = createdUser;
     }
 
@@ -71,6 +92,13 @@ public class User {
         this.phone = phone;
     }
 
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public List<Task> getTasks() {
         return tasks;
@@ -80,7 +108,12 @@ public class User {
         this.tasks = tasks;
     }
 
-    public User() {
+    public UserAccount getUserAccount() {
+        return userAccount;
+    }
+
+    public void setUserAccount(UserAccount userAccount) {
+        this.userAccount = userAccount;
     }
 
     @Override
@@ -88,11 +121,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(tasks, user.tasks);
+        return Objects.equals(userId, user.userId) && Objects.equals(username, user.username) && Objects.equals(createdUser, user.createdUser) && Objects.equals(email, user.email) && Objects.equals(phone, user.phone) && Objects.equals(password, user.password) && Objects.equals(tasks, user.tasks) && Objects.equals(userAccount, user.userAccount);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, createdUser, email, phone, tasks);
+        return Objects.hash(userId, username, createdUser, email, phone, password, tasks, userAccount);
     }
 }
