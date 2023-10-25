@@ -52,7 +52,10 @@
                         <a class="btn btn-primary" th:href="@{/api/v1/tasks/completetask/{taskId}/{userId}(taskId = ${task.getId()}, userId = ${user.getUserId()})}"
                            href="/profile">
                             <i class="bi bi-check2-all"></i> Completar Tarefa</a>
-                        <button type="button" class="btn btn-warning"><i class="bi bi-pen"></i> Editar Tarefa</button>
+
+                        <a class="btn btn-warning" th:href="@{/api/v1/tasks/edittask/{taskId}/{userId}(taskId = ${task.getId()}, userId = ${user.getUserId()})}"
+                           href="/api/v1/tasks/edittask">
+                            <i class="bi bi-pen"></i> Editar Tarefa</a>
                         <button type="button" class="btn btn-danger"><i class="bi bi-archive"></i> Apagar Tarefa</button>
                     </div>
 
@@ -61,14 +64,17 @@
                          th:if="${!task.getDone()}">
                         <h2 th:text="${task.getTitle()}"  class=" text-center">
                         </h2>
-                        <span th:text="${task.getFormatDate(task.getCreatedAt())}"></span>
+                        <p>Criada em: <span th:text="${task.getFormatDate(task.getCreatedAt())}"></span></p>
                     </div>
 
                     <div class="d-flex justify-content-between align-items-center w-100 bg-dark  text-secondary" style="border-bottom: 2px solid rgb(128,128,128); width: 100%; padding: 16px;"
                     th:if="${task.getDone()}">
                         <h2 th:text="${task.getTitle()}" style="text-decoration: line-through"  class=" text-center">
                         </h2>
-                        <span th:text="${task.getFormatDate(task.getCompletionDate())}"></span>
+                        <p>Completa em
+                            <span th:text="${task.getFormatDate(task.getCompletionDate())}"></span>
+                        </p>
+
                     </div>
 
                     <p th:text="${task.getDescription()}" style="padding: 20px; background-color: white; font-size: 20px" class="w-100">

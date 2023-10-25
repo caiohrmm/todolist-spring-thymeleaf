@@ -94,9 +94,11 @@ public class UserServiceImpl implements UserInterfaceService {
     }
 
     @Override
-    public Task updateTask(Long userId, Long taskId, Task updatedTask) {
+    public Task updateTask(Long taskId, Long userId, Task updatedTask) {
+        System.out.println(taskId + " " + userId);
+
         // Verificar se a tarefa existe e pertence ao usuário
-        Task existingTask = taskRepository.findById(taskId).orElse(null);
+        Task existingTask = taskRepository.findTaskByUserId(taskId, userId);
 
         if (existingTask == null || !existingTask.getUser().getUserId().equals(userId)) {
             throw new TaskNotFoundException("Tarefa não encontrada ou não pertence ao usuário");
@@ -105,6 +107,7 @@ public class UserServiceImpl implements UserInterfaceService {
         // Atualizar os campos da tarefa com os novos valores
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
+        existingTask.setCreatedAt(updatedTask.getCreatedAt());
         existingTask.setCompletionDate(updatedTask.getCompletionDate());
         existingTask.setDone(updatedTask.getDone());
 

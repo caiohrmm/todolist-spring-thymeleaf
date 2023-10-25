@@ -39,6 +39,28 @@ public class TaskController {
         return "createtask";
     }
 
+    @GetMapping("/edittask/{taskId}/{userId}")
+    public String editTask(Model model, @PathVariable Long taskId,
+                       @PathVariable Long userId){
+        Task task = repository.findTaskByUserId(taskId, userId);
+        model.addAttribute("task", task
+                );
+        model.addAttribute("user",
+                task.getUser());
+        return "edittask";
+    }
+
+    @PostMapping("/edittask/{taskId}/{userId}")
+    public String editTask(@PathVariable Long taskId,
+                           @PathVariable Long userId,
+                           @ModelAttribute("updatedTask")
+                               Task updatedTask){
+
+        service.updateTask(taskId, userId, updatedTask);
+
+        return "redirect:/profile";
+    }
+
     @PostMapping("/createtask")
     public String createTask(Task task, Authentication auth, Model model)  {
         UserAccount userAccount = userAccountRepository
