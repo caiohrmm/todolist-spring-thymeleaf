@@ -54,7 +54,7 @@ public class TaskController {
     public String editTask(@PathVariable Long taskId,
                            @PathVariable Long userId,
                            @ModelAttribute("updatedTask")
-                               Task updatedTask){
+                               Task updatedTask, Model model){
 
         service.updateTask(taskId, userId, updatedTask);
 
@@ -72,8 +72,6 @@ public class TaskController {
         User user = userAccount.getUser();
 
         task.setUser(user);
-        task.setCreatedAt(LocalDateTime.now());
-        task.setDone(false);
 
         try {
             service.createTask(task);
@@ -97,6 +95,16 @@ public class TaskController {
     public String completeTask(@PathVariable Long userId) {
 
         service.deleteCompletedTasks(userId);
+
+        return "redirect:/profile";
+
+
+    }
+
+    @GetMapping("/deletetask/{taskId}/{userId}")
+    public String deleteTaskById(@PathVariable Long taskId, @PathVariable Long userId) {
+
+        service.deleteTask(taskId, userId);
 
         return "redirect:/profile";
 

@@ -70,32 +70,23 @@ public class UserServiceImpl implements UserInterfaceService {
         return tasks;
     }
 
-    @Override
-    public Task getTaskById(Long taskId, Long userId) {
-       Task task = taskRepository.findTaskByUserId(userId, taskId);
-
-       if (task == null) throw new TaskNotFoundException("A tarefa não existe!");
-
-       return task;
-    }
-
+    @Transactional
     @Override
     public void deleteTask(Long taskId, Long userId) {
 
         // Verificar se a tarefa pertence ao usuário
-        Task task = taskRepository.findById(taskId).orElse(null);
-        if (task == null || !(task.getUser().equals(userId))) {
+        Task task = taskRepository.findTaskByUserId(taskId, userId);
+        if (task == null || !(task.getUser().getUserId().equals(userId))) {
             // Tarefa não encontrada ou não pertence ao usuário, pode lançar uma exceção personalizada ou retornar uma mensagem de erro
             throw new TaskNotFoundException("Tarefa não encontrada ou não pertence ao usuário");
         }
         // Excluir a tarefa
-        taskRepository.deleteById(taskId);
+        taskRepository.deleteTaskByUser(taskId, userId);
 
     }
 
     @Override
     public Task updateTask(Long taskId, Long userId, Task updatedTask) {
-        System.out.println(taskId + " " + userId);
 
         // Verificar se a tarefa existe e pertence ao usuário
         Task existingTask = taskRepository.findTaskByUserId(taskId, userId);
@@ -107,9 +98,6 @@ public class UserServiceImpl implements UserInterfaceService {
         // Atualizar os campos da tarefa com os novos valores
         existingTask.setTitle(updatedTask.getTitle());
         existingTask.setDescription(updatedTask.getDescription());
-        existingTask.setCreatedAt(updatedTask.getCreatedAt());
-        existingTask.setCompletionDate(updatedTask.getCompletionDate());
-        existingTask.setDone(updatedTask.getDone());
 
         // Salvar a tarefa atualizada no banco de dados
         return taskRepository.save(existingTask);
@@ -123,9 +111,19 @@ public class UserServiceImpl implements UserInterfaceService {
             throw new InvalidTaskException("O título da tarefa é obrigatório.");
         }
 
+        if (task.getExpectedDate() == null ){
+            throw new InvalidTaskException("A data esperada da tarefa é obrigatório.");
+        }
+
+
         if (task.getDescription() == null || task.getDescription().isEmpty()) {
             throw new InvalidTaskException("O título da tarefa é obrigatório.");
         }
+
+        task.setCreatedAt(LocalDateTime.now());
+        task.setDone(false);
+        task.setCompletedTaskOnTime(false);
+
 
         // Salvar a tarefa no banco de dados
         return taskRepository.save(task);
@@ -133,7 +131,7 @@ public class UserServiceImpl implements UserInterfaceService {
 
     @Override
     public void completeTask(Long taskId, Long userId) {
-        Task task = taskRepository.findTaskByUserId(userId, taskId);
+        Task task = taskRepository.findTaskByUserId(taskId, userId);
 
         if (task == null || !task.getUser().getUserId().equals(userId)) {
             throw new TaskNotFoundException("Tarefa não encontrada ou não pertence ao usuário");
@@ -141,6 +139,12 @@ public class UserServiceImpl implements UserInterfaceService {
 
         task.setCompletionDate(LocalDateTime.now());
         task.setDone(true);
+
+        if (task.getCompletionDate().isBefore(task.getConvertedDate(task.expectedDate))){
+            task.setCompletedTaskOnTime(true);
+        }
+
+
         taskRepository.save(task);
     }
 

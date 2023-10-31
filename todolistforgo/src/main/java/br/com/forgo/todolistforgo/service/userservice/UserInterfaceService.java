@@ -19,7 +19,6 @@ public interface UserInterfaceService {
 
     // Métodos para as tasks.
     List<Task> getAllTasksForUser(Long userId);
-    Task getTaskById(Long taskId, Long userId);
     void deleteTask(Long taskId, Long userId);
     Task updateTask(Long taskId, Long userId, Task updatedTask);
     Task createTask(Task task);

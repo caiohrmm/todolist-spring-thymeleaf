@@ -28,6 +28,12 @@ public class Task {
     @Column(name = "completed_date", columnDefinition = "TIMESTAMP")
     private LocalDateTime completionDate;
 
+    @Column(name = "expected_date")
+    public String expectedDate;
+
+    @Column
+    public Boolean completedTaskOnTime;
+
     @Column
     private Boolean done;
 
@@ -64,6 +70,18 @@ public class Task {
         this.createdAt = LocalDateTime.parse(formattedDateTime, formatter);
     }
 
+    public String getFormatDate(LocalDateTime localDateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return localDateTime.format(formatter);
+    }
+
+    public LocalDateTime getConvertedDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        // faz o parsing e setar o horário para meia-noite
+        return LocalDate.parse(date, formatter).atStartOfDay();
+    }
+
+
     public LocalDateTime getCompletionDate() {
         return completionDate;
     }
@@ -96,21 +114,36 @@ public class Task {
         this.user = user;
     }
 
+
+    public String getExpectedDate() {
+        return expectedDate;
+    }
+
+    public void setExpectedDate(String expectedDate) {
+        this.expectedDate = expectedDate;
+    }
+
+    public Boolean getCompletedTaskOnTime() {
+        return completedTaskOnTime;
+    }
+
+    public void setCompletedTaskOnTime(Boolean completedTaskOnTime) {
+        this.completedTaskOnTime = completedTaskOnTime;
+    }
+
+
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Task task = (Task) o;
-        return Objects.equals(id, task.id) && Objects.equals(title, task.title) && Objects.equals(description, task.description) && Objects.equals(createdAt, task.createdAt) && Objects.equals(completionDate, task.completionDate) && Objects.equals(done, task.done) && Objects.equals(user, task.user);
+        return Objects.equals(id, task.id) && Objects.equals(title, task.title) && Objects.equals(description, task.description) && Objects.equals(createdAt, task.createdAt) && Objects.equals(completionDate, task.completionDate) && Objects.equals(expectedDate, task.expectedDate) && Objects.equals(completedTaskOnTime, task.completedTaskOnTime) && Objects.equals(done, task.done) && Objects.equals(user, task.user);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, title, description, createdAt, completionDate, done, user);
-    }
-
-    public String getFormatDate(LocalDateTime localDateTime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-        return localDateTime.format(formatter);
+        return Objects.hash(id, title, description, createdAt, completionDate, expectedDate, completedTaskOnTime, done, user);
     }
 }
